@@ -17,6 +17,7 @@ from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.db import Base
 from .user import User
+from datetime import datetime
 
 class Wallet(Base):
     __tablename__ = "wallets"
@@ -26,7 +27,7 @@ class Wallet(Base):
     wallet_address: Mapped[str] = mapped_column(String, unique=True, index=True)
     wallet_type: Mapped[str] = mapped_column(String)
     balance: Mapped[float] = mapped_column(default=0.00)
-    created_at: Mapped[str] = mapped_column(default="CURRENT_TIMESTAMP")
-    updated_at: Mapped[str] = mapped_column(default="CURRENT_TIMESTAMP", onupdate="CURRENT_TIMESTAMP")
+    created_at: Mapped[datetime] = mapped_column(default="CURRENT_TIMESTAMP")
+    updated_at: Mapped[datetime] = mapped_column(default="CURRENT_TIMESTAMP", onupdate="CURRENT_TIMESTAMP")
 
     owner: Mapped["User"] = relationship(back_populates="wallets")
