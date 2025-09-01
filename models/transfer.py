@@ -15,8 +15,6 @@ CREATE TABLE transfers (
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.db import Base
-from .user import User
-from .transaction import Transaction
 
 class Transfer(Base):
     __tablename__ = "transfers"

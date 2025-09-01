@@ -16,7 +16,6 @@ CREATE TABLE wallets (
 from sqlalchemy import Integer, String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.db import Base
-from .user import User
 from datetime import datetime
 
 class Wallet(Base):

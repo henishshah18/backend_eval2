@@ -18,9 +18,6 @@ CREATE TABLE users (
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.db import Base
-from .wallet import Wallet
-from .transaction import Transaction
-from .transfer import Transfer
 from datetime import datetime
 
 class User(Base):

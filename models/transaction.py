@@ -18,8 +18,6 @@ CREATE TABLE transactions (
 from sqlalchemy import Integer, String, ForeignKey, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database.db import Base
-from .user import User
-from .transfer import Transfer
 
 class Transaction(Base):
     __tablename__ = "transactions"
