@@ -29,8 +29,8 @@ class User(Base):
     password: Mapped[str] = mapped_column(String)
     phone_number: Mapped[str] = mapped_column(String, nullable=True)
     balance: Mapped[float] = mapped_column(default=0.00)
-    created_at: Mapped[datetime] = mapped_column(default="CURRENT_TIMESTAMP")
-    updated_at: Mapped[datetime] = mapped_column(default="CURRENT_TIMESTAMP", onupdate="CURRENT_TIMESTAMP")
+    created_at: Mapped[str] = mapped_column(default="CURRENT_TIMESTAMP")
+    updated_at: Mapped[str] = mapped_column(default="CURRENT_TIMESTAMP", onupdate="CURRENT_TIMESTAMP")
 
     wallets: Mapped[list["Wallet"]] = relationship(back_populates="owner")
     transactions: Mapped[list["Transaction"]] = relationship(back_populates="user")
