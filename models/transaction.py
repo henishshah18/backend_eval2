@@ -14,9 +14,17 @@ CREATE TABLE transactions (
 );
 '''
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
-from sqlalchemy import Integer, String, ForeignKey, Text
+from sqlalchemy import Integer, String, ForeignKey, Text, DateTime, Numeric, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from datetime import datetime
+
+if TYPE_CHECKING:
+    from .user import User
+    from .transfer import Transfer
+
 from database.db import Base
 
 class Transaction(Base):
@@ -25,12 +33,12 @@ class Transaction(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     transaction_type: Mapped[str] = mapped_column(String)
-    amount: Mapped[float] = mapped_column()
+    amount: Mapped[float] = mapped_column(Numeric(10, 2))
     description: Mapped[str] = mapped_column(Text, nullable=True)
     reference_transfer_id: Mapped[int] = mapped_column(ForeignKey("transfers.id"), nullable=True)
     recipient_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=True)
-    created_at: Mapped[str] = mapped_column(default="CURRENT_TIMESTAMP")
-    updated_at: Mapped[str] = mapped_column(default="CURRENT_TIMESTAMP", onupdate="CURRENT_TIMESTAMP")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
-    user: Mapped["User"] = relationship(back_populates="transactions")
-    reference_transfer: Mapped["Transfer"] = relationship(back_populates="transactions")
+    user: Mapped["User"] = relationship("User", back_populates="transactions", foreign_keys=[user_id])
+    reference_transfer: Mapped["Transfer"] = relationship("Transfer", back_populates="transactions", foreign_keys=[reference_transfer_id])

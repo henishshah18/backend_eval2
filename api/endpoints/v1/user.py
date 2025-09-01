@@ -53,6 +53,7 @@ def update_user(user_id: int, user_update: UserUpdate, db: Session = Depends(get
 @router.post("/", response_model=UserFetch, status_code=status.HTTP_201_CREATED)
 def create_user(user: UserCreate, db: Session = Depends(get_db)):
     db_user = crud_user.create_user(db, user=user)
-    db_wallet = crud_wallet.create_wallet_for_user(db, user_id=db_user.id)
-    return {"user": db_user, "wallet": db_wallet}
-    
+    # Create an associated wallet (side effect) but do not include in response since response_model expects UserFetch
+    crud_wallet.create_wallet_for_user(db, user_id=db_user.id)
+    return db_user
+

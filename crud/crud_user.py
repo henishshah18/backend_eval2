@@ -30,42 +30,59 @@ Response: 200 OK
 
 '''
 
-from venv import create
 from sqlalchemy.orm import Session
 from models.user import User
 from schemas.user import UserCreate, UserFetch, UserUpdate
 from passlib.context import CryptContext
+from typing import Optional
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
+# Helper retrieval functions
+
+def get_user_by_email(db: Session, email: str) -> Optional[User]:
+    return db.query(User).filter(User.email == email).first()
+
+def get_user_by_username(db: Session, username: str) -> Optional[User]:
+    return db.query(User).filter(User.username == username).first()
+
 def create_user(db: Session, user: UserCreate) -> User:
+    # Pre-existence checks to avoid IntegrityError
+    if get_user_by_email(db, user.email):
+        raise ValueError("Email already registered")
+    if get_user_by_username(db, user.username):
+        raise ValueError("Username already taken")
     hashed_password = get_password_hash(user.password)
     db_user = User(
         username=user.username,
         email=user.email,
         phone_number=user.phone_number,
-        hashed_password=hashed_password,
+        password=hashed_password,  # store hashed password in password column
         balance=0.00,  # Initial balance
-        created_at=user.created_at,
-        updated_at=user.updated_at
     )
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
-def get_user(db: Session, user_id: int) -> UserFetch:
+def get_user(db: Session, user_id: int) -> Optional[User]:
     return db.query(User).filter(User.id == user_id).first()
 
 def update_user(db: Session, user_id: int, user_update: UserUpdate):
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         return None
-    for var, value in vars(user_update).items():
-        if value is not None:
-            setattr(db_user, var, value)
+    data = user_update.dict(exclude_unset=True)
+    # Hash password if provided
+    if "password" in data and data["password"] is not None:
+        data["password"] = get_password_hash(data["password"])
+    # Do not allow direct balance manipulation here unless intended
+    # (Remove below line if balance updates are allowed)
+    # if "balance" in data: del data["balance"]
+    for field, value in data.items():
+        setattr(db_user, field, value)
     db.commit()
     db.refresh(db_user)
     return db_user
