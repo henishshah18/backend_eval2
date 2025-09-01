@@ -25,7 +25,6 @@ class WalletBase(BaseModel):
 class WalletCreate(WalletBase):
     user_id: int
     wallet_address: str
-    wallet_type: str
     balance: Optional[float] = 0.00
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None

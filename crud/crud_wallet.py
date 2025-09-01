@@ -49,14 +49,14 @@ from models.transaction import Transaction
 from schemas.wallet import WalletAddMoney, WalletWithdrawMoney, WalletAddMoneyResponse, WalletBase, WalletCreate, WalletBalance
 from datetime import datetime
 
-def create_wallet(db: Session, wallet: WalletCreate):
+
+def create_wallet_for_user(db: Session, user_id: int):
     db_wallet = Wallet(
-        user_id=wallet.user_id,
-        wallet_address=wallet.wallet_address,
-        wallet_type=wallet.wallet_type,
-        balance=wallet.balance,
-        created_at=wallet.created_at or datetime.utcnow(),
-        updated_at=wallet.updated_at or datetime.utcnow()
+        user_id=user_id,
+        wallet_address=f"wallet_{user_id}",
+        balance=0.0,
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
     )
     db.add(db_wallet)
     db.commit()
